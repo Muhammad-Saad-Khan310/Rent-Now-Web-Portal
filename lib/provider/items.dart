@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import '../models/http_exception.dart';
 import './item.dart';
@@ -66,11 +67,6 @@ class Items with ChangeNotifier {
   }
 
   Future<void> fetchAndSetItems([bool filterByUser = false]) async {
-    // final filterString = filterByUser
-    //     ? '?auth=$authToken&orderBy="creatorId"&equalTo="$userId"'
-    //     : '';
-    // final url = Uri.parse(
-    //     "https://rentnow-f12ca-default-rtdb.firebaseio.com/items.json$filterString");
     final url = Uri.parse(
         "https://rentnow-f12ca-default-rtdb.firebaseio.com/items.json");
     try {
@@ -93,11 +89,7 @@ class Items with ChangeNotifier {
               ));
         }
       });
-      // if (filterByUser) {
-      //   _userItems = loadedItem;
-      // } else {
-      //   _items = loadedItem;
-      // }
+
       _items = loadedItem;
 
       notifyListeners();
@@ -105,11 +97,6 @@ class Items with ChangeNotifier {
       rethrow;
     }
   }
-
-  // void deleteItem(String id) {
-  //   _items.removeWhere((item) => item.id == id);
-  //   notifyListeners();
-  // }
 
   Future<void> acceptItem(String id) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
@@ -128,7 +115,6 @@ class Items with ChangeNotifier {
   }
 
   Future<void> deleteItem(String id) async {
-    // ?auth=$authToken
     final url = Uri.parse(
         "https://rentnow-f12ca-default-rtdb.firebaseio.com/items/$id.json?auth=$authToken");
 
@@ -143,7 +129,5 @@ class Items with ChangeNotifier {
       throw HttpException("Could not delete Item.");
     }
     existingItem = null;
-
-    // _items.removeWhere((item) => item.id == id);
   }
 }

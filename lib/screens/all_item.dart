@@ -1,21 +1,20 @@
-import 'package:adminportal/provider/accounts.dart';
+// ignore_for_file: use_build_context_synchronously, no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
-// import 'package:flutter/src/widgets/container.dart';
-// import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/accounts.dart';
+import './user_reports_screen.dart';
 import '../provider/auth.dart';
-import '../provider/item.dart';
 import '../widgets/all_item_widget.dart';
-import '../app_drawer.dart';
-import './user_account.dart';
 import './login.dart';
 import './profile_screen.dart';
 import '../provider/items.dart';
 
 class AllItem extends StatefulWidget {
-  // const AllItem({super.key});
   static const routeName = "/all_item";
+
+  const AllItem({super.key});
 
   @override
   State<AllItem> createState() => _AllItemState();
@@ -24,6 +23,7 @@ class AllItem extends StatefulWidget {
 class _AllItemState extends State<AllItem> {
   var _isInit = true;
   var _isLoading = false;
+  var _showEmptyMessage = false;
   var renter = [
     Account(
         id: "id",
@@ -45,20 +45,27 @@ class _AllItemState extends State<AllItem> {
       setState(() {
         _isLoading = true;
       });
-      await Provider.of<UserAccounts>(context).fetchRenter().then((_) {
-        final renterData = Provider.of<UserAccounts>(context, listen: false);
-        renter = renterData.accounts;
-        setState(() {
-          _isLoading = true;
+      try {
+        await Provider.of<UserAccounts>(context).fetchRenter().then((_) {
+          final renterData = Provider.of<UserAccounts>(context, listen: false);
+          renter = renterData.accounts;
+          setState(() {
+            _isLoading = true;
+          });
         });
-      });
-      await Provider.of<Items>(context, listen: false)
-          .fetchAndSetItems(false)
-          .then((_) {
+        await Provider.of<Items>(context, listen: false)
+            .fetchAndSetItems(false)
+            .then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+        });
+      } catch (error) {
         setState(() {
           _isLoading = false;
+          _showEmptyMessage = true;
         });
-      });
+      }
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -69,64 +76,88 @@ class _AllItemState extends State<AllItem> {
   Widget build(BuildContext context) {
     final itemData = Provider.of<Items>(context);
     final itm = itemData.items;
+    if (itm.isEmpty) {
+      _showEmptyMessage = true;
+    }
+    final width = MediaQuery.of(context).size.width;
+    var childHeight = 3 / 2;
+    var showItem = 3;
+    if (width <= 1317 && width >= 1172) {
+      childHeight = 4 / 2;
+      showItem = 2;
+    } else if (width < 1172) {
+      showItem = 1;
+      childHeight = 2 / 4;
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text("Admin Portal")),
-      // drawer: const AppDrawer(),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Row(
-              children: [
-                SideBar(renter[0].userName, renter[0].imageUrl, itm.length),
-                Container(
-                  width: 1100,
-                  // height: 800,
-
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Container(
-                            width: double.infinity,
-                            height: 600,
-                            padding: const EdgeInsets.only(
-                                top: 40.0, left: 20, right: 20, bottom: 20),
-                            child: GridView.builder(
-                              padding: const EdgeInsets.all(10.0),
-                              itemCount: itm.length,
-                              itemBuilder: (ctx, int i) {
-                                return AllItemWidget(
-                                    id: itm[i].id,
-                                    title: itm[i].title,
-                                    imageUrl: itm[i].imageUrl,
-                                    price: itm[i].price,
-                                    description: itm[i].description,
-                                    address: itm[i].address,
-                                    phoneNumber: itm[i].phoneNumber);
-                              },
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      childAspectRatio: 3 / 2,
-                                      crossAxisSpacing: 10,
-                                      mainAxisSpacing: 10),
-                            ),
+          : SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              // margin: EdgeInsets.only(right: 10),
+              child: Row(
+                children: [
+                  SideBar(renter[0].userName, renter[0].imageUrl, itm.length),
+                  _showEmptyMessage
+                      ? Container(
+                          padding: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width * 0.3,
+                              top: MediaQuery.of(context).size.height * 0.01),
+                          child: Text(
+                            "No Item Requests",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * 0.03),
+                          ),
+                        )
+                      : SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.78,
+                          height: MediaQuery.of(context).size.height,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 600,
+                                    child: GridView.builder(
+                                      padding: const EdgeInsets.all(10.0),
+                                      itemCount: itm.length,
+                                      itemBuilder: (ctx, int i) {
+                                        return AllItemWidget(
+                                            id: itm[i].id,
+                                            title: itm[i].title,
+                                            imageUrl: itm[i].imageUrl,
+                                            price: itm[i].price,
+                                            description: itm[i].description,
+                                            address: itm[i].address,
+                                            phoneNumber: itm[i].phoneNumber);
+                                      },
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: showItem,
+                                              childAspectRatio: childHeight,
+                                              crossAxisSpacing: 10,
+                                              mainAxisSpacing: 10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
     );
   }
 }
 
 class SideBar extends StatelessWidget {
-  // const SideBar({
-  //   Key? key,
-  // }) : super(key: key);
   final String userName;
   final String imageUrl;
   final int totalRequest;
@@ -138,23 +169,14 @@ class SideBar extends StatelessWidget {
       showDialog(
         context: ctx,
         builder: (ctx) => AlertDialog(
-          // title: const Text("Alert!"),
-          content: Container(child: Image.network(image)),
-          // actions: [
-          //   TextButton(
-          //     child: const Text("Ok"),
-          //     onPressed: () {
-          //       ;
-          //     },
-          //   )
-          // ],
+          content: Image.network(image),
         ),
       );
     }
 
     return Container(
       width: 250,
-      height: double.infinity,
+      height: MediaQuery.of(context).size.height,
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 185, 189, 192)),
       child: Column(
@@ -164,7 +186,7 @@ class SideBar extends StatelessWidget {
               Container(
                 width: 250,
                 height: 265,
-                decoration: BoxDecoration(color: Colors.teal),
+                decoration: const BoxDecoration(color: Colors.teal),
                 child: Center(
                   child: Column(
                     children: [
@@ -178,19 +200,13 @@ class SideBar extends StatelessWidget {
                           onTap: () => _showAdminImage(imageUrl, context),
                           child: CircleAvatar(
                             radius: 100,
-                            backgroundImage: NetworkImage(imageUrl
-                                // "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?cs=srgb&dl=pexels-mike-b-170811.jpg&fm=jpg"
-                                ),
+                            backgroundImage: NetworkImage(imageUrl),
                           ),
                         ),
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      // Text(
-                      //   userName,
-                      //   style: const TextStyle(fontWeight: FontWeight.bold),
-                      // )
                     ],
                   ),
                 ),
@@ -203,17 +219,7 @@ class SideBar extends StatelessWidget {
               size: 35,
               color: Colors.teal,
             ),
-            title: totalRequest > 0
-                ? Row(
-                    children: [
-                      const Text("Item Request"),
-                      Text(
-                        " ($totalRequest)",
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  )
-                : const Text("Item Request"),
+            title: const Text("Item Request"),
             onTap: () async {
               Navigator.of(context).pushNamed(AllItem.routeName);
             },
@@ -221,18 +227,18 @@ class SideBar extends StatelessWidget {
           const Divider(
             color: Colors.teal,
           ),
-          // ListTile(
-          //   leading: const Icon(
-          //     Icons.add_box,
-          //     size: 35,
-          //     color: Colors.teal,
-          //   ),
-          //   title: const Text("User Accounts"),
-          //   onTap: () {
-          //     Navigator.of(context).pushNamed(AllAccounts.routeName);
-          //   },
-          // ),
-          // const Divider(color: Colors.teal),
+          ListTile(
+            leading: const Icon(
+              Icons.add_box,
+              size: 35,
+              color: Colors.teal,
+            ),
+            title: const Text("User Reports"),
+            onTap: () {
+              Navigator.of(context).pushNamed(UserReportsScreen.routeName);
+            },
+          ),
+          const Divider(color: Colors.teal),
           ListTile(
               leading: const Icon(
                 Icons.person,
@@ -257,7 +263,6 @@ class SideBar extends StatelessWidget {
                     Navigator.of(context).pushNamed(Login.routeName);
                   },
                 ),
-
           userData.isAuth
               ? ListTile(
                   leading: const Icon(

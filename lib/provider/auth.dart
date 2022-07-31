@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/http_exception.dart';
 
 class Auth with ChangeNotifier {
@@ -71,6 +70,7 @@ class Auth with ChangeNotifier {
     await authenticate1(email, password, "signInWithPassword");
     final url = Uri.parse(
         "https://rentnow-f12ca-default-rtdb.firebaseio.com/renters/$userId.json/?auth=$_token");
+
     final res = await http.get(url);
     final resData = json.decode(res.body);
     resData.forEach((renterId, renterData) {
@@ -84,40 +84,12 @@ class Auth with ChangeNotifier {
     return;
   }
 
-  // Future<bool> tryAutoLogin() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   if (!prefs.containsKey("userData")) {
-  //     return false;
-  //   }
-  //   final extractedUserData =
-  //       json.decode(prefs.getString('userData')!) as Map<String, dynamic>;
-  //   final expiryDate =
-  //       DateTime.parse(extractedUserData['expiryDate'] as String);
-
-  //   if (expiryDate.isBefore(DateTime.now())) {
-  //     return false;
-  //   }
-  //   _token = extractedUserData['token'] as String;
-  //   _userId = extractedUserData['userId'] as String;
-  //   _expiryDate = expiryDate;
-  //   notifyListeners();
-  //   _autoLogout();
-  //   return true;
-  // }
-
   Future<void> logout() async {
     _token = null;
     _userId = null;
     _expiryDate = null;
 
-    // if (_authTimer != null) {
-    //   _authTimer!.cancel();
-    //   _authTimer = null;
-    // }
     notifyListeners();
-    // final prefs = await SharedPreferences.getInstance();
-    // prefs.remove("userData");
-    // prefs.clear();
   }
 
   void _autoLogout() {
@@ -143,33 +115,5 @@ class Auth with ChangeNotifier {
     } else {
       _showForm = false;
     }
-  }
-
-  Future<void> addRenter(String userName, String imageUrl, String dateOfBirth,
-      String phoneNumber, String address) async {
-    final url = Uri.parse(
-        "https://rentnow-f12ca-default-rtdb.firebaseio.com/renters/$_userId.json?auth=$_token");
-
-    try {
-      final response = await http.post(
-        url,
-        body: json.encode(
-          {
-            'userName': userName,
-            'imageUrl': imageUrl,
-            'dateOfBirth': dateOfBirth,
-            'phoneNumber': phoneNumber,
-            'address': address,
-          },
-        ),
-      );
-      final responseData = json.decode(response.body);
-      if (responseData['error'] != null) {
-        throw HttpException(responseData["error"]["message"]);
-      }
-    } catch (error) {
-      rethrow;
-    }
-    notifyListeners();
   }
 }

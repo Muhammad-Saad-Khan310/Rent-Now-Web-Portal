@@ -1,7 +1,7 @@
+// ignore_for_file: file_names, prefer_const_constructors_in_immutables
 import 'package:flutter/material.dart';
 
 import 'update_admin.dart';
-// import './update_renter.dart';
 
 class UserProfile extends StatelessWidget {
   final String adminId;
@@ -10,48 +10,25 @@ class UserProfile extends StatelessWidget {
   final String phoneNumber;
   final String address;
   final String imageUrl;
-  // const UserProfile({Key? key}) : super(key: key);
-  UserProfile(this.adminId, this.userName, this.dateOfBirth, this.phoneNumber,
-      this.address, this.imageUrl);
 
-  // Widget userField(String fieldName, IconData iconName) {
-  //   return Container(
-  //     margin: const EdgeInsets.only(top: 40, left: 20, right: 20),
-  //     width: 500,
-  //     child: Row(
-  //       children: [
-  //         Icon(iconName),
-  //         const SizedBox(
-  //           width: 10,
-  //         ),
-  //         Text(
-  //           fieldName,
-  //           style: const TextStyle(fontSize: 20),
-  //         ),
-  //       ],
-  //     ),
-  //     decoration: const BoxDecoration(
-  //       border: Border(
-  //         bottom: BorderSide(color: Colors.black),
-  //       ),
-  //     ),
-  //   );
-  // }
+  UserProfile(this.adminId, this.userName, this.dateOfBirth, this.phoneNumber,
+      this.address, this.imageUrl,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
+    var h = MediaQuery.of(context).size.width * 0.03;
+    var v = MediaQuery.of(context).size.width * 0.02;
     return SingleChildScrollView(
       child: Column(
         children: [
           Column(
             children: [
               ClipPath(
-                // clipper: CustomClipPath(),
                 child: Column(
                   children: [
                     Center(
                       child: Container(
-                        // decoration: BoxDecoration(color: Colors.red),
                         margin: const EdgeInsets.only(
                           top: 40.4,
                         ),
@@ -72,14 +49,14 @@ class UserProfile extends StatelessWidget {
                     ),
                     Text(
                       userName,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 50.0, fontWeight: FontWeight.bold),
                     ),
                     const Text(
                       "Admin Of RentNow",
                       style: TextStyle(fontSize: 20),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Row(
@@ -87,14 +64,14 @@ class UserProfile extends StatelessWidget {
                       children: [
                         Column(
                           children: [
-                            const Text(
+                            Text(
                               "Date Of Birth:",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 45.0),
+                                  fontWeight: FontWeight.bold, fontSize: h),
                             ),
                             Text(
                               dateOfBirth,
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: v),
                             )
                           ],
                         ),
@@ -103,14 +80,14 @@ class UserProfile extends StatelessWidget {
                         ),
                         Column(
                           children: [
-                            const Text(
+                            Text(
                               "Phone No:",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 45.0),
+                                  fontWeight: FontWeight.bold, fontSize: h),
                             ),
                             Text(
                               phoneNumber,
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: v),
                             )
                           ],
                         ),
@@ -119,14 +96,14 @@ class UserProfile extends StatelessWidget {
                         ),
                         Column(
                           children: [
-                            const Text(
+                            Text(
                               "Address:",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 45.0),
+                                  fontWeight: FontWeight.bold, fontSize: h),
                             ),
                             Text(
                               address,
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: v),
                             )
                           ],
                         )
@@ -137,21 +114,6 @@ class UserProfile extends StatelessWidget {
               ),
             ],
           ),
-          // Container(
-          //   color: Color.fromARGB(255, 165, 218, 212),
-          //   child: Column(
-          //     children: [
-          //       // userField("userName", Icons.person),
-          //       // userField("dateOfBirth", Icons.date_range),
-          //       // userField("phoneNumber", Icons.phone),
-          //       // userField("address", Icons.home),
-          //       SizedBox(
-          //         height: 50,
-          //       )
-          //     ],
-          //   ),
-          // ),
-
           const SizedBox(
             height: 25,
           ),
@@ -183,50 +145,8 @@ class UserProfile extends StatelessWidget {
               ),
             ),
           ),
-
-          // GestureDetector(
-          //   onTap: (() {
-          //     Navigator.of(context)
-          //         .pushNamed(UpdateRenter.routeName, arguments: renterId);
-          //   }),
-          //   child: const Align(
-          //     alignment: Alignment.bottomCenter,
-          //     child: Text("Update"),
-          //   ),
-          // )
         ],
       ),
     );
-    //   ),
-    // );
   }
 }
-
-// class CustomClipPath extends CustomClipper<Path> {
-//   @override
-//   Path getClip(Size size) {
-//     // double w = size.width;
-//     // double h = size.height;
-//     final path = Path();
-//     path.lineTo(0, size.height);
-//     path.quadraticBezierTo(
-//         size.width / 2, size.height - 100, size.width, size.height);
-//     path.lineTo(size.width, 0);
-//     // path.lineTo(0, h);
-//     // path.quadraticBezierTo(w, h, 0, 0);
-//     // path.lineTo(w, h);
-//     // path.lineTo(w, 0);
-//     // // from 1 to 5 line is created by close button
-//     // path.close();
-//     return path;
-//     // TODO: implement getClip
-//     throw UnimplementedError();
-//   }
-
-//   @override
-//   bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-//     return false;
-//     // TODO: implement shouldReclip
-//     throw UnimplementedError();
-//   }
-// }
