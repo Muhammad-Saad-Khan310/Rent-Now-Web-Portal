@@ -67,8 +67,7 @@ class Items with ChangeNotifier {
   }
 
   Future<void> fetchAndSetItems([bool filterByUser = false]) async {
-    final url = Uri.parse(
-        "https://rentnow-f12ca-default-rtdb.firebaseio.com/items.json");
+    final url = Uri.parse("your api");
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -101,8 +100,7 @@ class Items with ChangeNotifier {
   Future<void> acceptItem(String id) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = Uri.parse(
-          "https://rentnow-f12ca-default-rtdb.firebaseio.com/items/$id.json?auth=$authToken");
+      final url = Uri.parse("your api");
       http.patch(url,
           body: json.encode({
             'validItem': true,
@@ -115,8 +113,7 @@ class Items with ChangeNotifier {
   }
 
   Future<void> deleteItem(String id) async {
-    final url = Uri.parse(
-        "https://rentnow-f12ca-default-rtdb.firebaseio.com/items/$id.json?auth=$authToken");
+    final url = Uri.parse("your api");
 
     final existingItemIndex = _items.indexWhere((item) => item.id == id);
     Item? existingItem = _items[existingItemIndex];

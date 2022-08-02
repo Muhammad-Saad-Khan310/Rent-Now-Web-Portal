@@ -44,8 +44,7 @@ class UserAccounts with ChangeNotifier {
   }
 
   Future<void> fetchRenter() async {
-    final url = Uri.parse(
-        "https://rentnow-f12ca-default-rtdb.firebaseio.com/renters/$userId.json/?auth=$authToken");
+    final url = Uri.parse("your api");
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body);
@@ -72,8 +71,7 @@ class UserAccounts with ChangeNotifier {
   }
 
   Future<void> getUserProfile() async {
-    final url = Uri.parse(
-        "https://rentnow-f12ca-default-rtdb.firebaseio.com/renters/$userId.json?auth=$authToken");
+    final url = Uri.parse("your api");
     final response = await http.get(url);
     final extractedData = json.decode(response.body);
     List<Account> loadedItem = [];
@@ -99,8 +97,7 @@ class UserAccounts with ChangeNotifier {
   Future<void> updateAdmin(String id, Account newData) async {
     final prodIndex = _accounts.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = Uri.parse(
-          "https://rentnow-f12ca-default-rtdb.firebaseio.com/renters/$userId/$id.json?auth=$authToken");
+      final url = Uri.parse("your api");
       http.patch(url,
           body: json.encode({
             'userName': newData.userName,

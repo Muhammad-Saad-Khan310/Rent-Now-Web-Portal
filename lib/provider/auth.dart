@@ -35,8 +35,7 @@ class Auth with ChangeNotifier {
 
   Future<void> authenticate1(
       String email, String password, String urlSegment) async {
-    final url = Uri.parse(
-        "https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyAqyk7TDClx0TBfEDpaQu0VVW-IPtSOIM4");
+    final url = Uri.parse("your api");
     try {
       final response = await http.post(
         url,
@@ -68,8 +67,7 @@ class Auth with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     await authenticate1(email, password, "signInWithPassword");
-    final url = Uri.parse(
-        "https://rentnow-f12ca-default-rtdb.firebaseio.com/renters/$userId.json/?auth=$_token");
+    final url = Uri.parse("your api");
 
     final res = await http.get(url);
     final resData = json.decode(res.body);
@@ -102,8 +100,7 @@ class Auth with ChangeNotifier {
 
   Future<void> showAddItemForm() async {
     if (_token != null) {
-      final url = Uri.parse(
-          "https://rentnow-f12ca-default-rtdb.firebaseio.com/renters/$_userId.json?auth=$_token");
+      final url = Uri.parse("your api");
 
       final response = await http.get(url);
       final extractedData = json.decode(response.body);
